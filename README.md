@@ -1,2 +1,2 @@
-# Haskell-Markdown-CSS
+# Haskell-Markdown-HTML
  
