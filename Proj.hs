@@ -9,6 +9,10 @@ import Text.Parsec.Combinator
 import Data.List (intercalate)
 import Data.Maybe (catMaybes)
 
+--add file reading and print to 
+--add syntax checker and potential ways to fix that
+--
+
 -- Data type to represent different Markdown elements
 data MarkdownElement = Header Int String
                      | Paragraph String
