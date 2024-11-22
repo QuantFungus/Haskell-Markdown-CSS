@@ -8,6 +8,7 @@ import Text.Parsec.Char
 import Text.Parsec.Combinator
 import Data.List (intercalate)
 import Data.Maybe (catMaybes)
+import System.IO
 
 -- Data type to represent different Markdown elements
 data MarkdownElement = Header Int String
@@ -69,10 +70,21 @@ markdownToHTML input = do
     elements <- parse markdownParser "" input
     return $ intercalate "\n" (map elementToHTML elements)
 
--- Sample function to run conversion
+-- Function to read from a Markdown file and write HTML to an output file
+processMarkdownFile :: FilePath -> FilePath -> IO ()
+processMarkdownFile inputFile outputFile = do
+    markdownText <- readFile inputFile
+    case markdownToHTML markdownText of
+        Left err -> putStrLn $ "Error parsing Markdown: " ++ show err
+        Right html -> do
+            writeFile outputFile html
+            putStrLn $ "HTML written to: " ++ outputFile
+
+-- Sample usage
 main :: IO ()
 main = do
-    let markdownText = "# Header 1\nThis is a paragraph.\n- Item 1\n- Item 2\n[Link](https://example.com)"
-    case markdownToHTML markdownText of
-        Left err -> print err
-        Right html -> putStrLn html
+    putStrLn "Enter the input Markdown file path:"
+    inputFile <- getLine
+    putStrLn "Enter the output HTML file path:"
+    outputFile <- getLine
+    processMarkdownFile inputFile outputFile
