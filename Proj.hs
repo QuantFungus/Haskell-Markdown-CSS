@@ -1,5 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- TODO: 
+-- add linter
+-- add header way without counting '#'
+-- add more data strucutre for linked lists
+
 module MarkdownToHTML where
 
 import Text.Parsec
