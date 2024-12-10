@@ -10,7 +10,7 @@ import System.IO
 -- Data type to represent different Markdown elements
 data MarkdownElement = Header Int String
                      | Paragraph String
-                     | UnorderedList [MarkdownElement]
+                     | UnorderedList [String]
                      deriving (Show)
 
 -- Parse a header (e.g., # Header 1)
@@ -28,33 +28,20 @@ paragraphParser = do
     _ <- optional newline
     return $ Paragraph (concat content)
 
--- Parse an unordered list, including nested lists
+-- Parse an unordered list
 unorderedListParser :: Parser MarkdownElement
 unorderedListParser = do
-    items <- many1 listItemParser
+    items <- many1 listItemParser -- Ensure at least one item
     return $ UnorderedList items
 
--- Parse a single list item and detect nested lists
-listItemParser :: Parser MarkdownElement
+-- Parse a single list item
+listItemParser :: Parser String
 listItemParser = do
     _ <- char '-'
     space
-    content <- many1 (try linkInlineParser <|> plainTextParser)
-    nested <- option [] nestedListParser
-    let currentItem = Paragraph (concat content)
-    if null nested
-        then return currentItem
-        else return $ UnorderedList (currentItem : nested)
-
--- Parse nested unordered lists (indentation is used to detect nesting)
-nestedListParser :: Parser [MarkdownElement]
-nestedListParser = do
-    _ <- newline
-    many1 $ try $ do
-        spaces <- many1 (char ' ')
-        if length spaces >= 4 -- Ensure proper indentation for nesting
-            then listItemParser
-            else fail "Not a nested item"
+    content <- many1 (try linkInlineParser <|> plainTextParser) -- Ensure non-empty list items
+    _ <- optional newline
+    return (concat content)
 
 -- Parse inline links inside text
 linkInlineParser :: Parser String
@@ -87,17 +74,12 @@ markdownParser = many1 $ do
         , paragraphParser
         ]
 
--- Convert MarkdownElement to HTML
+-- Convert MarkdownElement to HTML with proper formatting
 elementToHTML :: MarkdownElement -> String
 elementToHTML (Header level content) = "<h" ++ show level ++ ">" ++ content ++ "</h" ++ show level ++ ">"
 elementToHTML (Paragraph content) = "<p>" ++ content ++ "</p>"
-elementToHTML (UnorderedList items) = "<ul>" ++ concatMap (\item -> "<li>" ++ itemToHTML item ++ "</li>") items ++ "</ul>"
-
--- Convert list item to HTML (handling nested elements)
-itemToHTML :: MarkdownElement -> String
-itemToHTML (Paragraph content) = content
-itemToHTML (UnorderedList items) = "<ul>" ++ concatMap (\item -> "<li>" ++ itemToHTML item ++ "</li>") items ++ "</ul>"
-itemToHTML elem = elementToHTML elem
+elementToHTML (UnorderedList items) =
+    "<ul>\n" ++ concatMap (\item -> "  <li>" ++ item ++ "</li>\n") items ++ "</ul>"
 
 -- Main function to parse Markdown and convert to HTML
 markdownToHTML :: String -> Either ParseError String
