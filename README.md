@@ -8,7 +8,7 @@
  4. When prompted, type the name of an output HTML file
  5. The program will output a converted HTML file (If the Markdown filename was invalid then no output file will be made)
 
-Cabal looks for `app/Main.hs`, which then looks for` src/Proj.hs`'s processMarkdownFile method. 
+Cabal looks for `app/Main.hs`, which then looks for `src/Proj.hs`'s processMarkdownFile method. You could also just `cd` to `src`, run `ghci Proj.hs`, and then use the `markdownToHTML` method to convert Markdown in the CLI.
 
 ## How to run the tests
 

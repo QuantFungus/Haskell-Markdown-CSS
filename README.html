@@ -5,7 +5,7 @@
 <p> 3. When prompted, type the name of an input Markdown file</p>
 <p> 4. When prompted, type the name of an output HTML file</p>
 <p> 5. The program will output a converted HTML file (If the Markdown filename was invalid then no output file will be made)</p>
-<p>Cabal looks for `app/Main.hs`, which then looks for` src/Proj.hs`'s processMarkdownFile method. </p>
+<p>Cabal looks for `app/Main.hs`, which then looks for `src/Proj.hs`'s processMarkdownFile method. You could also just `cd` to `src`, run `ghci Proj.hs`, and then use the `markdownToHTML` method to convert Markdown in the CLI.</p>
 <h2>How to run the tests</h2>
 <p> 1. Use `cd` to navigate to the project root</p>
 <p> 2. Run `cabal run Haskell-Markdown-HTML-test`</p>
