@@ -1,0 +1,23 @@
+Test suite Haskell-Markdown-HTML-test: RUNNING...
+
+Cases: 5  Tried: 0  Errors: 0  Failures: 0
+Cases: 5  Tried: 1  Errors: 0  Failures: 0
+Cases: 5  Tried: 2  Errors: 0  Failures: 0
+Cases: 5  Tried: 3  Errors: 0  Failures: 0
+                                          
+### Failure in: 3:Link Test
+test/Main.hs:41
+Link test failed
+expected: "<a href=\"https://google.com\">google</a>"
+ but got: "<p><a href=\"https://google.com\">google</a></p>"
+
+Cases: 5  Tried: 4  Errors: 0  Failures: 1
+                                          
+### Failure in: 4:Combined Elements Test
+test/Main.hs:55
+Combined elements test failed
+expected: "<h1>Header 1</h1>\n<p>This is a paragraph.</p>\n<ul><li>Item 1</li><li>Item 2</li></ul>\n<a href=\"https://openai.com\">OpenAI</a>\n"
+ but got: "<h1>Header 1</h1>"
+Cases: 5  Tried: 5  Errors: 0  Failures: 2
+Test suite Haskell-Markdown-HTML-test: PASS
+Test suite logged to: /Users/Arnav/Documents/GitHub/Haskell-Markdown-HTML/dist-newstyle/build/aarch64-osx/ghc-9.4.4/Haskell-Markdown-HTML-0.1.0.0/t/Haskell-Markdown-HTML-test/test/Haskell-Markdown-HTML-0.1.0.0-Haskell-Markdown-HTML-test.log
