@@ -45,7 +45,12 @@ testLink = TestCase $ do
 testCombinedElements :: Test
 testCombinedElements = TestCase $ do
     let input = "# Header 1\n\nThis is a paragraph.\n\n- Item 1\n- Item 2\n\n[Google](https://google.com)\n"
-    let expectedOutput = "<h1>Header 1</h1><p>This is a paragraph.</p><ul><li>Item 1</li><li>Item 2</li></ul><p><a href=\"https://google.com\">Google</a></p>"
+    let expectedOutput = concat
+            [ "<h1>Header 1</h1>\n"
+            , "<p>This is a paragraph.</p>\n"
+            , "<ul><li>Item 1</li><li>Item 2</li></ul>\n"
+            , "<p><a href=\"https://google.com\">Google</a></p>"
+            ]
     case markdownToHTML input of
         Right result -> assertEqual "Combined elements test failed" expectedOutput result
         Left err     -> assertFailure $ "Parsing error: " ++ show err

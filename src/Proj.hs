@@ -88,7 +88,7 @@ elementToHTML (UnorderedList items) =
 markdownToHTML :: String -> Either ParseError String
 markdownToHTML input = do
     elements <- parse (markdownParser <* eof) "" input
-    return $ intercalate "" (map elementToHTML elements)
+    return $ intercalate "\n" (map elementToHTML elements)
 
 -- Function to read from a Markdown file and write HTML to an output file
 processMarkdownFile :: FilePath -> FilePath -> IO ()
