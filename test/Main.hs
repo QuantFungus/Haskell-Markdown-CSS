@@ -35,8 +35,8 @@ testUnorderedList = TestCase $ do
 -- Test for a link
 testLink :: Test
 testLink = TestCase $ do
-    let input = "[OpenAI](https://openai.com)\n"
-    let expectedOutput = "<p><a href=\"https://openai.com\">OpenAI</a></p>"
+    let input = "[Google](https://google.com)\n"
+    let expectedOutput = "<p><a href=\"https://google.com\">Google</a></p>"
     case markdownToHTML input of
         Right result -> assertEqual "Link test failed" expectedOutput result
         Left err     -> assertFailure $ "Parsing error: " ++ show err
@@ -44,13 +44,8 @@ testLink = TestCase $ do
 -- Test for combined elements
 testCombinedElements :: Test
 testCombinedElements = TestCase $ do
-    let input = "# Header 1\n\nThis is a paragraph.\n\n- Item 1\n- Item 2\n\n[OpenAI](https://openai.com)\n"
-    let expectedOutput = unlines
-            [ "<h1>Header 1</h1>"
-            , "<p>This is a paragraph.</p>"
-            , "<ul><li>Item 1</li><li>Item 2</li></ul>"
-            , "<a href=\"https://openai.com\">OpenAI</a>"
-            ]
+    let input = "# Header 1\n\nThis is a paragraph.\n\n- Item 1\n- Item 2\n\n[Google](https://google.com)\n"
+    let expectedOutput = "<h1>Header 1</h1><p>This is a paragraph.</p><ul><li>Item 1</li><li>Item 2</li></ul><p><a href=\"https://google.com\">Google</a></p>"
     case markdownToHTML input of
         Right result -> assertEqual "Combined elements test failed" expectedOutput result
         Left err     -> assertFailure $ "Parsing error: " ++ show err
