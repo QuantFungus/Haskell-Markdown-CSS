@@ -3,7 +3,7 @@
 module Main where
 
 import Test.HUnit
-import Proj (markdownToHTML)  -- Import the function you want to test from Proj.hs
+import Proj (markdownToHTML, validateMarkdown, suggestFix)  -- Import necessary functions from Proj.hs
 import Data.List (isInfixOf)
 
 -- Test for a header element
@@ -64,6 +64,20 @@ testInvalidMarkdown = TestCase $ do
         Right _ -> assertFailure "Expected parsing to fail for invalid Markdown"
         Left err -> assertBool "Invalid Markdown should produce an error" ("Invalid Markdown" `isInfixOf` err)
 
+-- Test for suggestion output when a closing bracket is missing
+testSuggestionForMissingBracket :: Test
+testSuggestionForMissingBracket = TestCase $ do
+    let input = "This is a [broken link(https://example.com)\n"
+    case validateMarkdown input of
+        Right _ -> assertFailure "Expected parsing to fail for invalid Markdown"
+        Left err -> do
+            let suggestion = suggestFix err
+            assertBool "Error message should contain 'Invalid Markdown'" ("Invalid Markdown" `isInfixOf` err)
+            assertBool "Error should mention the missing closing bracket"
+                ("expecting \"]\"" `isInfixOf` err)
+            assertEqual "Suggestion should prompt the correct fix"
+                "Check your Markdown syntax for errors." suggestion
+
 tests :: Test
 tests = TestList [ TestLabel "Header Test" testHeader
                  , TestLabel "Paragraph Test" testParagraph
@@ -71,6 +85,7 @@ tests = TestList [ TestLabel "Header Test" testHeader
                  , TestLabel "Link Test" testLink
                  , TestLabel "Combined Elements Test" testCombinedElements
                  , TestLabel "Invalid Markdown Test" testInvalidMarkdown
+                 , TestLabel "Suggestion Test" testSuggestionForMissingBracket
                  ]
 
 main :: IO Counts

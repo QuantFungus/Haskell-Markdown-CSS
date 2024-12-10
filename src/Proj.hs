@@ -4,7 +4,7 @@ module Proj where
 
 import Text.Parsec
 import Text.Parsec.String (Parser)
-import Data.List (intercalate)
+import Data.List (intercalate, isInfixOf)
 
 -- Data type to represent different Markdown elements
 data MarkdownElement = Header Int String
@@ -16,7 +16,7 @@ data MarkdownElement = Header Int String
 headerParser :: Parser MarkdownElement
 headerParser = do
     hashes <- many1 (char '#')
-    _ <- many1 space
+    _ <- space
     content <- manyTill anyChar (try newline <|> eofHandler)
     return $ Header (length hashes) content
 
@@ -53,7 +53,7 @@ linkInlineParser = do
 plainTextParser :: Parser String
 plainTextParser = many1 (noneOf "[]\n") -- Ensure non-empty text
 
--- Handle end-of-input explicitly by returning a dummy Char
+-- Handle end-of-input explicitly for Char
 eofHandler :: Parser Char
 eofHandler = lookAhead eof >> return '\n'
 
@@ -87,6 +87,14 @@ validateMarkdown input =
         Left err -> Left $ "Invalid Markdown: " ++ show err
         Right elements -> Right elements
 
+-- Suggest fixes for invalid Markdown
+suggestFix :: String -> String
+suggestFix errorMsg
+  | "Unclosed" `isInfixOf` errorMsg = "Ensure all elements are properly closed (e.g., **bold**, [links])."
+  | "Header missing space" `isInfixOf` errorMsg = "Add a space after the `#` symbol in headers."
+  | "Invalid list item" `isInfixOf` errorMsg = "Start list items with `-` or `*`."
+  | otherwise = "Check your Markdown syntax for errors."
+
 -- Convert MarkdownElement to HTML with proper formatting
 elementToHTML :: MarkdownElement -> String
 elementToHTML (Header level content) = "<h" ++ show level ++ ">" ++ content ++ "</h" ++ show level ++ ">"
@@ -105,13 +113,15 @@ processMarkdownFile :: FilePath -> FilePath -> IO ()
 processMarkdownFile inputFile outputFile = do
     markdownText <- readFile inputFile
     case markdownToHTML markdownText of
-        Left err -> putStrLn err
+        Left err -> do
+            putStrLn $ "Error detected: " ++ err
+            putStrLn $ "Suggestion: " ++ suggestFix err
         Right html -> do
             writeFile outputFile html
             putStrLn $ "HTML written to: " ++ outputFile
 
 
--- Sample usage
+-- Only in use if ran with GHCI, cabal uses app/Main.hs instead
 main :: IO ()
 main = do
     putStrLn "Enter the input Markdown file path:"

@@ -22,9 +22,10 @@ Cabal looks for `test/Main.hs`, which then looks for` src/Proj.hs`'s markdownToH
 
 - **src/Proj.hs** - Contains the core logic for parsing Markdown and converting it to HTML:
   - `MarkdownElement` data type for representing different Markdown elements.
-  - Parsers for headers, paragraphs, lists, and links.
+  - Parsers for headers, paragraphs, lists, links, and bold.
   - `markdownToHTML` function to convert Markdown to HTML.
   - `processMarkdownFile` function to handle file I/O operations.
+  - `validateMarkdown` to check syntax errors and `suggestFix` for suggestions
 
 - **app/Main.hs** - The main application entry point:
   - Uses `processMarkdownFile` from `Proj.hs` to read Markdown input, convert it, and write HTML output.
