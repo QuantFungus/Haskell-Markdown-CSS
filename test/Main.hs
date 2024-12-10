@@ -36,7 +36,7 @@ testUnorderedList = TestCase $ do
 testLink :: Test
 testLink = TestCase $ do
     let input = "[OpenAI](https://openai.com)\n"
-    let expectedOutput = "<a href=\"https://openai.com\">OpenAI</a>"
+    let expectedOutput = "<p><a href=\"https://openai.com\">OpenAI</a></p>"
     case markdownToHTML input of
         Right result -> assertEqual "Link test failed" expectedOutput result
         Left err     -> assertFailure $ "Parsing error: " ++ show err
