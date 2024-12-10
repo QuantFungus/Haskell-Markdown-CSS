@@ -9,7 +9,7 @@ import Data.List (intercalate, isInfixOf)
 -- Data type to represent different Markdown elements
 data MarkdownElement = Header Int String
                      | Paragraph String
-                     | UnorderedList [String]
+                     | UnorderedList [MarkdownElement]
                      deriving (Show)
 
 -- Parse a header (e.g., # Header 1)
@@ -31,14 +31,16 @@ paragraphParser = do
 unorderedListParser :: Parser MarkdownElement
 unorderedListParser = do
     items <- many1 listItemParser
-    return $ UnorderedList (map trim items)
+    return $ UnorderedList items
 
--- Parse a single list item
-listItemParser :: Parser String
+-- Parse a single list item (as MarkdownElement to handle inline links)
+listItemParser :: Parser MarkdownElement
 listItemParser = do
     _ <- char '-'
     _ <- space
-    manyTill anyChar (try newline <|> eofHandler)
+    content <- many1 (try linkInlineParser <|> plainTextParser)
+    _ <- optional newline
+    return $ Paragraph (concat content)
 
 -- Parse inline links inside text
 linkInlineParser :: Parser String
@@ -100,7 +102,7 @@ elementToHTML :: MarkdownElement -> String
 elementToHTML (Header level content) = "<h" ++ show level ++ ">" ++ content ++ "</h" ++ show level ++ ">"
 elementToHTML (Paragraph content) = "<p>" ++ content ++ "</p>"
 elementToHTML (UnorderedList items) =
-    "<ul>" ++ concatMap (\item -> "<li>" ++ item ++ "</li>") items ++ "</ul>"
+    "<ul>\n" ++ concatMap (\item -> "  " ++ elementToHTML item ++ "\n") items ++ "</ul>"
 
 -- Main function to parse Markdown and convert to HTML
 markdownToHTML :: String -> Either String String

@@ -11,5 +11,3 @@ unordered list with link:
 - Third item with a [another link](https://example.com)
 ##### Header 5
 Amazing
-###### Header 6
-That is the test
