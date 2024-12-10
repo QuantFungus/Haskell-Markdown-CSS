@@ -42,7 +42,7 @@ Cabal looks for `test/Main.hs`, which then looks for` src/Proj.hs`'s markdownToH
 
 This project uses:
 
-- **parsec** - For parsing Markdown syntax.
+- **Parsec** - For parsing Markdown syntax.
 - **HUnit** - For unit testing.
 
 Make sure these libraries are installed or included in your cabal file.

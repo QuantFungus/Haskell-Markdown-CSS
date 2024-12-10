@@ -6,7 +6,6 @@ import Text.Parsec
 import Text.Parsec.String (Parser)
 import Data.List (intercalate)
 
-
 -- Data type to represent different Markdown elements
 data MarkdownElement = Header Int String
                      | Paragraph String
@@ -70,24 +69,35 @@ skipBlankLines = skipMany (try (newline >> notFollowedBy (oneOf "\n")))
 markdownParser :: Parser [MarkdownElement]
 markdownParser = do
     skipBlankLines
-    many $ do
-        skipBlankLines
-        choice
+    elements <- many $ do
+        element <- choice
             [ try headerParser
             , try unorderedListParser
             , paragraphParser
-            ] <* skipBlankLines
+            ]
+        skipBlankLines
+        return element
+    eof -- Ensure that the entire input is parsed
+    return elements
+
+-- Validate Markdown
+validateMarkdown :: String -> Either String [MarkdownElement]
+validateMarkdown input =
+    case parse markdownParser "" input of
+        Left err -> Left $ "Invalid Markdown: " ++ show err
+        Right elements -> Right elements
 
 -- Convert MarkdownElement to HTML with proper formatting
 elementToHTML :: MarkdownElement -> String
 elementToHTML (Header level content) = "<h" ++ show level ++ ">" ++ content ++ "</h" ++ show level ++ ">"
 elementToHTML (Paragraph content) = "<p>" ++ content ++ "</p>"
 elementToHTML (UnorderedList items) =
-    "<ul>" ++ intercalate "" (map (\item -> "<li>" ++ item ++ "</li>") items) ++ "</ul>"
+    "<ul>" ++ concatMap (\item -> "<li>" ++ item ++ "</li>") items ++ "</ul>"
 
-markdownToHTML :: String -> Either ParseError String
+-- Main function to parse Markdown and convert to HTML
+markdownToHTML :: String -> Either String String
 markdownToHTML input = do
-    elements <- parse (markdownParser <* eof) "" input
+    elements <- validateMarkdown input
     return $ intercalate "\n" (map elementToHTML elements)
 
 -- Function to read from a Markdown file and write HTML to an output file
@@ -95,10 +105,11 @@ processMarkdownFile :: FilePath -> FilePath -> IO ()
 processMarkdownFile inputFile outputFile = do
     markdownText <- readFile inputFile
     case markdownToHTML markdownText of
-        Left err -> putStrLn $ "Error parsing Markdown: " ++ show err
+        Left err -> putStrLn err
         Right html -> do
             writeFile outputFile html
             putStrLn $ "HTML written to: " ++ outputFile
+
 
 -- Sample usage
 main :: IO ()

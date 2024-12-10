@@ -10,10 +10,6 @@ unordered list with link:
 - Second
 - Third item with a [another link](https://example.com)
 ##### Header 5
-- Nested list item 1(still testing)
-    - Subitem 1
-    - Subitem 2
-- Nested list item 2
-    - Subitem 1 with [another link](https://example.com)
+Amazing
 ###### Header 6
 That is the test

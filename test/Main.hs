@@ -4,6 +4,7 @@ module Main where
 
 import Test.HUnit
 import Proj (markdownToHTML)  -- Import the function you want to test from Proj.hs
+import Data.List (isInfixOf)
 
 -- Test for a header element
 testHeader :: Test
@@ -55,12 +56,21 @@ testCombinedElements = TestCase $ do
         Right result -> assertEqual "Combined elements test failed" expectedOutput result
         Left err     -> assertFailure $ "Parsing error: " ++ show err
 
+-- Test for invalid Markdown
+testInvalidMarkdown :: Test
+testInvalidMarkdown = TestCase $ do
+    let input = "# Header 1\n\nThis is a paragraph with an unclosed [link(https://google.com)\n"
+    case markdownToHTML input of
+        Right _ -> assertFailure "Expected parsing to fail for invalid Markdown"
+        Left err -> assertBool "Invalid Markdown should produce an error" ("Invalid Markdown" `isInfixOf` err)
+
 tests :: Test
 tests = TestList [ TestLabel "Header Test" testHeader
                  , TestLabel "Paragraph Test" testParagraph
                  , TestLabel "Unordered List Test" testUnorderedList
                  , TestLabel "Link Test" testLink
                  , TestLabel "Combined Elements Test" testCombinedElements
+                 , TestLabel "Invalid Markdown Test" testInvalidMarkdown
                  ]
 
 main :: IO Counts
